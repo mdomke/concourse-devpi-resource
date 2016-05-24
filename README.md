@@ -1,8 +1,8 @@
-= Devpi Resource
+# Devpi Resource
 
 A [Concourse CI](http://concourse.ci) resource to track packages from the [devpi](http://doc.devpi.net/latest/) server.
 
-== Source Configuration
+## Source Configuration
 
 * `uri`: *Required*. The base URI of the devpi server.
 * `index`: *Required*. The package index in the form `user/name`.
@@ -10,7 +10,7 @@ A [Concourse CI](http://concourse.ci) resource to track packages from the [devpi
 * `username`: *Optional*. The username for logging in (Required for `out`)
 * `password`: *Optional*. The password for logging in (Required for `out`)
 
-=== Example
+### Example
 
 Resource configuration:
 
