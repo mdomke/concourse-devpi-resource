@@ -15,18 +15,22 @@ from common import get_payload
 
 
 def put(src):
+    print("Using dir {}".format(src), file=sys.stderr)
     payload = get_payload()
     url = get_index_url(payload)
     auth = get_auth(payload)
     filename = payload['params'].get('file')
+    filepath = None
     if not filename:
         pattern = payload['params']['fileglob']
-        filepath = sorted(glob(os.path.join(src, pattern)))[-1]
-        filename = os.path.basename(filepath)
+        package_files = sorted(glob(os.path.join(src, pattern)))
+        if package_files:
+            filepath = package_files[-1]
+            filename = os.path.basename(filepath)
     else:
         filepath = os.path.join(src, filename)
     if not os.path.exists(filepath):
-        print("Couldn't find package!")
+        print("Couldn't find package!", file=sys.stderr)
         sys.exit(1)
     meta = get_metadata(filepath)
 
