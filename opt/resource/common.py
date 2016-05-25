@@ -29,8 +29,8 @@ def get_auth(payload):
 
 
 def get_version(payload):
-    if 'version' in payload:
+    try:
         version = payload['version']['version']
-    else:
+    except TypeError:
         version = None
     return version
