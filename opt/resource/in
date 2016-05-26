@@ -30,6 +30,9 @@ def get(dst):
     with open(os.path.join(dst, filename), 'wb') as fp:
         fp.write(package.content)
 
+    with open(os.path.join(dst, 'version'), 'w') as fp:
+        fp.write(version)
+
     print(json.dumps({
         'version': {'version': version},
         'metadata': [

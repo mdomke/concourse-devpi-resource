@@ -23,15 +23,18 @@ def put(src):
     filepath = None
     if not filename:
         pattern = payload['params']['fileglob']
+        print("Using glob-pattern: {}".format(pattern), file=sys.stderr)
         package_files = sorted(glob(os.path.join(src, pattern)))
         if package_files:
             filepath = package_files[-1]
             filename = os.path.basename(filepath)
     else:
         filepath = os.path.join(src, filename)
-    if not os.path.exists(filepath):
+    if not filepath or not os.path.exists(filepath):
         print("Couldn't find package!", file=sys.stderr)
         sys.exit(1)
+    else:
+        print("Found package: {}".format(filepath), file=sys.stderr)
     meta = get_metadata(filepath)
 
     meta[':action'] = 'submit'
