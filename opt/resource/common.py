@@ -1,3 +1,4 @@
+from base64 import b64encode
 import json
 import tempfile
 from urllib.parse import urljoin
@@ -31,7 +32,7 @@ def get_package_url(payload):
 
 def get_auth(payload):
     source = payload['source']
-    return source['username'], source['password']
+    return b64encode(':'.join([source['username'], source['password']]).encode('ascii'))
 
 
 def get_version(payload):
