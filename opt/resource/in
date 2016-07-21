@@ -1,0 +1,46 @@
+#! /usr/bin/env python
+
+import json
+import os
+import sys
+
+import requests
+
+from common import get_package_url
+from common import get_payload
+from common import get_version
+
+
+def get(dst):
+    print("Using dir {}".format(dst), file=sys.stderr)
+    payload = get_payload()
+    url = get_package_url(payload)
+
+    if 'version' in payload.get('params', {}):
+        version = payload['params']['version']
+    else:
+        version = get_version(payload)
+
+    url += '/' + version
+
+    response = requests.get(url, headers={'accept': 'application/json'}).json()
+    download_link = response['result']['+links'][0]['href']
+    filename = os.path.basename(download_link)
+    package = requests.get(download_link)
+    with open(os.path.join(dst, filename), 'wb') as fp:
+        fp.write(package.content)
+
+    with open(os.path.join(dst, 'version'), 'w') as fp:
+        fp.write(version)
+
+    print(json.dumps({
+        'version': {'version': version},
+        'metadata': [
+            {'name': 'name', 'value': response['result']['name']},
+            {'name': 'author', 'value': response['result']['author']},
+            {'name': 'file', 'value': filename},
+        ]}))
+
+
+if __name__ == '__main__':
+    get(sys.argv[1])
