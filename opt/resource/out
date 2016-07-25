@@ -69,6 +69,7 @@ def put(src):
     print(json.dumps({
         'version': {'version': meta['version']},
         'metadata': [
+            {'name': 'index', 'value': payload['source']['index']},
             {'name': 'name', 'value': meta['name']},
             {'name': 'author', 'value': meta['author']},
             {'name': 'file', 'value': filename},
