@@ -14,31 +14,48 @@ from common import get_index_url
 from common import get_payload
 
 
-def put(src):
-    print("Using dir {}".format(src), file=sys.stderr)
-    payload = get_payload()
-    url = get_index_url(payload)
-    auth = get_auth(payload)
-    headers = {'X-Devpi-Auth': auth}
-    filename = payload['params'].get('file')
+def message(text):
+    print(text, file=sys.stderr)
+
+
+def get_filepath(src, filename, pattern):
     filepath = None
     if not filename:
-        pattern = payload['params']['fileglob']
-        print("Using glob-pattern: {}".format(pattern), file=sys.stderr)
+        message("Using glob-pattern: {}".format(pattern))
         package_files = sorted(glob(os.path.join(src, pattern)))
         if package_files:
             filepath = package_files[-1]
-            filename = os.path.basename(filepath)
     else:
         filepath = os.path.join(src, filename)
     if not filepath or not os.path.exists(filepath):
-        print("Couldn't find package!", file=sys.stderr)
-        sys.exit(1)
+        message("Couldn't find package!")
     else:
-        print("Found package: {}".format(filepath), file=sys.stderr)
-    meta = get_metadata(filepath)
+        message("Found package:      {}".format(filepath))
+    return filepath
 
+
+def put(src):
+    payload = get_payload()
+    url = get_index_url(payload)
+    auth = get_auth(payload)
+
+    message("Using dir:          {}".format(src))
+    message("Using index-url:    {}".format(url))
+
+    headers = {'X-Devpi-Auth': auth}
+    filename = payload['params'].get('file')
+    pattern = payload['params'].get('fileglob')
+    if not (filename or pattern):
+        message("Need at least 'file' or 'pattern' parameter.")
+
+    filepath = get_filepath(src, filename, pattern)
+    filename = os.path.basename(filepath)
+    if not filepath:
+        sys.exit(1)
+
+    meta = get_metadata(filepath)
     meta[':action'] = 'submit'
+    message("Register {}-{} to {}".format(meta['name'], meta['version'], url))
     response = requests.post(url, meta, headers=headers)
     response.raise_for_status()
 
@@ -46,11 +63,13 @@ def put(src):
     meta[':action'] = 'file_upload'
     files = {'content': (filename, open(filepath, 'rb'))}
     response = requests.post(url, meta, headers=headers, files=files)
+    message("Upload {} to {}".format(filename, url))
     response.raise_for_status()
 
     print(json.dumps({
         'version': {'version': meta['version']},
         'metadata': [
+            {'name': 'index', 'value': payload['source']['index']},
             {'name': 'name', 'value': meta['name']},
             {'name': 'author', 'value': meta['author']},
             {'name': 'file', 'value': filename},
