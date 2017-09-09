@@ -1,0 +1,16 @@
+sudo: required
+
+language: python
+install: true
+
+services:
+  - docker
+
+script: true
+
+after_success:
+  - if [ "$TRAVIS_BRANCH" == "master" ]; then
+    docker build -t $TRAVIS_REPO_SLUG .;
+    docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD";
+    docker push $TRAVIS_REPO_SLUG;
+    fi
