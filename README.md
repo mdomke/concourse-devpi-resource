@@ -21,6 +21,7 @@ resources:
   source:
     uri: http://pypi.host.tld:9090
     index: foo/dev
+    package: my-package-name
     username: user
     password: passwd
 ```
