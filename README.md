@@ -9,6 +9,7 @@ A [Concourse CI](http://concourse.ci) resource to track packages from the [devpi
 * `package`: *Required*. The pacakge to track.
 * `username`: *Optional*. The username for logging in (Required for `out`)
 * `password`: *Optional*. The password for logging in (Required for `out`)
+* `versioning`: *Optional*. The versioning scheme. Can be one of 'loose' (the default) or 'semantic'.
 
 ### Example
 
@@ -24,6 +25,7 @@ resources:
     package: my-package-name
     username: user
     password: passwd
+    versioning: semantic
 ```
 
 Fetching a package:
