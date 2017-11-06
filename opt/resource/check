@@ -3,20 +3,37 @@
 from distutils.version import LooseVersion
 import json
 
+from pbr.version import SemanticVersion
 import requests
 
 from common import get_package_url
 from common import get_payload
 from common import get_version
+from common import get_versioning_scheme
+
+
+class Version:
+    def __init__(self, v, scheme):
+        self.vstring = v
+        if scheme == 'loose':
+            self.version = LooseVersion(v)
+        elif scheme == 'semantic':
+            self.version = SemanticVersion.from_pip_string(v)
+        else:
+            raise ValueError("Invalid version scheme {}.".format(v))
+
+    def __lt__(self, other):
+        return self.version < other.version
 
 
 def check():
     payload = get_payload()
     url = get_package_url(payload)
     version = get_version(payload)
+    scheme = get_versioning_scheme(payload)
 
     response = requests.get(url, headers={'accept': 'application/json'}).json()
-    versions = sorted([LooseVersion(v) for v in response['result'].keys()])
+    versions = sorted([Version(v, scheme) for v in response['result'].keys()])
     result = [{'version': v.vstring} for v in versions]
 
     if versions and (version is None or version == versions[-1].vstring):

@@ -14,8 +14,14 @@ def get_payload():
     return payload
 
 
-def get_index_url(payload):
-    source = payload['source']
+def with_source(func):
+    def wrapper(payload):
+        return func(payload['source'])
+    return wrapper
+
+
+@with_source
+def get_index_url(source):
     uri = source['uri']
     index = source['index']
     if not uri.endswith('/'):
@@ -30,9 +36,14 @@ def get_package_url(payload):
     return get_index_url(payload) + package
 
 
-def get_auth(payload):
-    source = payload['source']
+@with_source
+def get_auth(source):
     return b64encode(':'.join([source['username'], source['password']]).encode('ascii'))
+
+
+@with_source
+def get_versioning_scheme(source):
+    return source.get('versioning', 'loose')
 
 
 def get_version(payload):
