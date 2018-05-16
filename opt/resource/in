@@ -12,7 +12,7 @@ from common import get_version
 
 
 def get(dst):
-    print("Using dir {}".format(dst), file=sys.stderr)
+    print(f"Using dir {dst}", file=sys.stderr)
     payload = get_payload()
     url = get_package_url(payload)
 

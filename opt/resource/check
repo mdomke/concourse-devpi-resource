@@ -20,7 +20,7 @@ class Version:
         elif scheme == 'semantic':
             self.version = SemanticVersion.from_pip_string(v)
         else:
-            raise ValueError("Invalid version scheme {}.".format(v))
+            raise ValueError(f"Invalid version scheme {v}.")
 
     def __lt__(self, other):
         return self.version < other.version

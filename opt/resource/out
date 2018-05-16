@@ -21,7 +21,7 @@ def message(text):
 def get_filepath(src, filename, pattern):
     filepath = None
     if not filename:
-        message("Using glob-pattern: {}".format(pattern))
+        message(f"Using glob-pattern: {pattern}")
         package_files = sorted(glob(os.path.join(src, pattern)))
         if package_files:
             filepath = package_files[-1]
@@ -30,7 +30,7 @@ def get_filepath(src, filename, pattern):
     if not filepath or not os.path.exists(filepath):
         message("Couldn't find package!")
     else:
-        message("Found package:      {}".format(filepath))
+        message(f"Found package:      {filepath}")
     return filepath
 
 
@@ -39,8 +39,8 @@ def put(src):
     url = get_index_url(payload)
     auth = get_auth(payload)
 
-    message("Using dir:          {}".format(src))
-    message("Using index-url:    {}".format(url))
+    message(f"Using dir:          {src}")
+    message(f"Using index-url:    {url}")
 
     headers = {'X-Devpi-Auth': auth}
     filename = payload['params'].get('file')
@@ -63,7 +63,7 @@ def put(src):
     meta[':action'] = 'file_upload'
     files = {'content': (filename, open(filepath, 'rb'))}
     response = requests.post(url, meta, headers=headers, files=files)
-    message("Upload {} to {}".format(filename, url))
+    message(f"Upload {filename} to {url}")
     response.raise_for_status()
 
     print(json.dumps({
