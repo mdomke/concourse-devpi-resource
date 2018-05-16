@@ -41,6 +41,43 @@ Pushing a local pacakge to the server:
   params: {fileglob: "*.whl"}
 ```
 
+The package to upload would usually be produced in a previous task of the job, e.g. by
+running `python setup.py bdis_wheel`. So a minimal job for uploading a package to your
+devpi-server would look like
+
+```yaml
+- name: package
+  plan:
+  - get: repo
+    trigger: true
+  - get: builder-image
+  - task: build-package
+    file: repo/ci/tasks/build-package.yml
+    image: builder-image
+```
+
+whereas the `build-package.yml` could look like
+
+```yaml
+platform: linux
+inputs:
+- {name: repo}
+outputs:
+- {name: wheel}
+run:
+  path: ci/scripts/build-package.sh
+  dir: repo
+  args: [../wheel]
+```
+
+and your `build-package.sh` like this
+
+```sh
+#!/bin/sh
+
+python setup.py bdist_wheel -d ${1}
+```
+
 ## Behavior
 
 ### `check`: Check for new versions
